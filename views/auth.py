@@ -4,7 +4,7 @@ import datetime
 import jwt
 from flask_restx import Resource, Namespace
 from flask import request, abort
-from models import User, UserSchema
+from models import User
 from setup_db import db
 import hashlib
 
@@ -81,3 +81,39 @@ class AuthView(Resource):
             "access_token": access_token,
             "refresh_token": refresh_token
         }, 201
+
+    def auth_required(func):
+        def wrapper(*args, **kwargs):
+            if 'Authorization' not in request.headers:
+                abort(401)
+
+            data = request.headers['Authorization']
+            token = data.split("Bearer ")[-1]
+            try:
+                jwt.decode(token, secret, algorithms=[algo])
+            except Exception as e:
+                print("JWT Decode Exception", e)
+                abort(401)
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    def admin_required(func):
+        def wrapper(*args, **kwargs):
+            if 'Authorization' not in request.headers:
+                abort(401)
+
+            data = request.headers['Authorization']
+            token = data.split("Bearer ")[-1]
+            try:
+                user = jwt.decode(token, secret, algorithms=[algo])
+                role = user.get("role")
+                if role == "admin":
+                    return func(*args, **kwargs)
+                abort(401, "Admin role required")
+            except Exception as e:
+                print("JWT Decode Exception", e)
+                abort(401)
+        return wrapper
+
+
