@@ -24,7 +24,7 @@ class AuthView(Resource):
 
         user = db.session.query(User).filter(User.username == username).first()
         if user is None:
-            return {"error": "Неверные учётные данные"}, 401
+            return {"error": "Неверные учётные данные1"}, 401
 
         password_hash = hashlib.md5(password.encode('utf-8')).hexdigest()
         if password_hash != user.password:
@@ -82,38 +82,38 @@ class AuthView(Resource):
             "refresh_token": refresh_token
         }, 201
 
-    def auth_required(func):
-        def wrapper(*args, **kwargs):
-            if 'Authorization' not in request.headers:
-                abort(401)
+def auth_required(func):
+    def wrapper(*args, **kwargs):
+        if 'Authorization' not in request.headers:
+            abort(401)
 
-            data = request.headers['Authorization']
-            token = data.split("Bearer ")[-1]
-            try:
-                jwt.decode(token, secret, algorithms=[algo])
-            except Exception as e:
-                print("JWT Decode Exception", e)
-                abort(401)
-            return func(*args, **kwargs)
+        data = request.headers['Authorization']
+        token = data.split("Bearer ")[-1]
+        try:
+            jwt.decode(token, secret, algorithms=[algo])
+        except Exception as e:
+            print("JWT Decode Exception", e)
+            abort(401)
+        return func(*args, **kwargs)
 
-        return wrapper
+    return wrapper
 
-    def admin_required(func):
-        def wrapper(*args, **kwargs):
-            if 'Authorization' not in request.headers:
-                abort(401)
+def admin_required(func):
+    def wrapper(*args, **kwargs):
+        if 'Authorization' not in request.headers:
+            abort(401)
 
-            data = request.headers['Authorization']
-            token = data.split("Bearer ")[-1]
-            try:
-                user = jwt.decode(token, secret, algorithms=[algo])
-                role = user.get("role")
-                if role == "admin":
-                    return func(*args, **kwargs)
-                abort(401, "Admin role required")
-            except Exception as e:
-                print("JWT Decode Exception", e)
-                abort(401)
-        return wrapper
+        data = request.headers['Authorization']
+        token = data.split("Bearer ")[-1]
+        try:
+            user = jwt.decode(token, secret, algorithms=[algo])
+            role = user.get("role")
+            if role == "admin":
+                return func(*args, **kwargs)
+            abort(401, "Admin role required")
+        except Exception as e:
+            print("JWT Decode Exception", e)
+            abort(401)
+    return wrapper
 
 

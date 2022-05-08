@@ -16,7 +16,10 @@ class MoviesView(Resource):
         director = request.args.get("director_id")
         genre = request.args.get("genre_id")
         year = request.args.get("year")
+        title = request.args.get("title")
         t = db.session.query(Movie)
+        if title is not None:
+            t = t.filter(Movie.title == title)
         if director is not None:
             t = t.filter(Movie.director_id == director)
         if genre is not None:
