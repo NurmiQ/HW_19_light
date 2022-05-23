@@ -4,9 +4,7 @@ jobs:
   build_and_push:
     runs-on: ubuntu-latest
     steps:
-      # Копируем код из репозитория в runner
       - name: clone code
         uses: actions/checkout@v2
-			# Собираем
       - name: docker build
-        run: docker build -t my-image .
+        run: docker build -t vadiqsun/hw_19:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
