@@ -2,8 +2,7 @@ version: "3.9"
 
 services:
   api:
-    build:
-      context: .
+    image: vadiqsun/hw_19:version-1
     ports:
       - 8080:80
     volumes:
