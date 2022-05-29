@@ -8,3 +8,5 @@ services:
       - 8080:80
     volumes:
       - ./volumes:/code/volumes
+    env_file:
+      - ./envs.env

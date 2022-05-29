@@ -10,5 +10,6 @@ COPY config.py .
 COPY constants.py .
 COPY models.py .
 COPY setup_db.py .
+COPY docker-compose.yaml
 
 CMD flask run -h 0.0.0.0 -p 80
